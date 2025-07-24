@@ -18,9 +18,8 @@ const App = () => {
   const [moveCount, setMoveCount] = useState<number>(0);
   const [shownCount, setShownCount] = useState<number>(0);
   const [gridItems, setGridItems] = useState<GridItemType[]>([]);
-  const [locked, setLocked] = useState<boolean>(false); // trava cliques enquanto verifica par
+  const [locked, setLocked] = useState<boolean>(false);
 
-  // Timer
   useEffect(() => {
     const timer = setInterval(() => {
       if (playing) {
@@ -30,7 +29,6 @@ const App = () => {
     return () => clearInterval(timer);
   }, [playing]);
 
-  // Reset e criação do grid
   const resetAndCreateGrid = () => {
     setTimeElapsed(0);
     setMoveCount(0);
@@ -59,7 +57,6 @@ const App = () => {
     setPlaying(true);
   };
 
-  // Clique no item
   const handleItemClick = (index: number) => {
     if (!playing || locked || shownCount >= 2 || gridItems[index].shown || gridItems[index].permanentShown) {
       return;
@@ -71,7 +68,6 @@ const App = () => {
     setShownCount(prev => prev + 1);
   };
 
-  // Verifica par quando duas cartas viradas
   useEffect(() => {
     if (shownCount === 2) {
       setLocked(true);
@@ -81,7 +77,6 @@ const App = () => {
         const [first, second] = shownItems;
 
         if (first.item === second.item) {
-          // Par correto
           let tmpGrid = [...gridItems];
           tmpGrid = tmpGrid.map(item =>
             item.shown && !item.permanentShown
@@ -91,7 +86,6 @@ const App = () => {
           setGridItems(tmpGrid);
           setShownCount(0);
         } else {
-          // Par incorreto
           setTimeout(() => {
             let tmpGrid = [...gridItems];
             tmpGrid = tmpGrid.map(item =>
@@ -107,7 +101,7 @@ const App = () => {
         setMoveCount(prev => prev + 1);
       }
 
-      setTimeout(() => setLocked(false), 1100); // liberação de clique com margem de delay
+      setTimeout(() => setLocked(false), 1100);
     }
   }, [shownCount, gridItems]);
 
