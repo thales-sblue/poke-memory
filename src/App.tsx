@@ -1,12 +1,45 @@
+import { useEffect, useState } from 'react';
 import * as C from './App.styles';
+
 import logoImage from './assets/devmemory_logo.png';
 import RestartIcon from './svgs/restart.svg';
+
 import { Button } from './components/Button';
 import { InfoItem } from './components/InfoItem';
+import { GridItem } from './components/GridItem';
+
+import { GridItemType } from './types/GridItemType';
+import { items } from './data/items';
 
 const App = () => {
+  const [playing, setplaying] = useState<boolean>(false);
+  const [timeElapsed, setTimeElapsed] = useState<number>(0);
+  const [moveCount, setMoveCount] = useState<number>(0);
+  const [showCount, setShowCount] = useState<number>(0);
+  const [gridItems, setGridItems] = useState<GridItemType[]>([]);
+
+  useEffect(() => resetAndCreateGrid(), []);
 
   const resetAndCreateGrid = () => {
+    setTimeElapsed(0);
+    setMoveCount(0);
+    setShowCount(0);
+
+    let newGrid: GridItemType[] = [];
+    for (let i = 0; i < (items.length * 2); i++) newGrid.push({
+      item: i, shown: false, permanentShown: false
+    });
+
+    for (let i = newGrid.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      [newGrid[i], newGrid[j]] = [newGrid[j], newGrid[i]];
+    }
+
+    setGridItems(newGrid);
+    setplaying(true);
+  }
+
+  const handleItemClick = (index: number) => {
 
   }
 
@@ -26,7 +59,13 @@ const App = () => {
       </C.Info>
       <C.GridArea>
         <C.Grid>
-
+          {gridItems.map((item, index) => (
+            <GridItem
+              key={index}
+              item={item}
+              onClick={() => handleItemClick(index)}
+            />
+          ))}
         </C.Grid>
       </C.GridArea>
 
