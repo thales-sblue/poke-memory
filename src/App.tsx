@@ -29,6 +29,13 @@ const App = () => {
     return () => clearInterval(timer);
   }, [playing]);
 
+  useEffect(() => {
+    if (playing && gridItems.length > 0 && gridItems.every(item => item.permanentShown)) {
+      setPlaying(false);
+      alert("🎉 Parabéns! Você completou o jogo!");
+    }
+  }, [gridItems, playing]);
+
   const resetAndCreateGrid = () => {
     setTimeElapsed(0);
     setMoveCount(0);
