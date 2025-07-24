@@ -10,53 +10,122 @@ import { GridItem } from './components/GridItem';
 
 import { GridItemType } from './types/GridItemType';
 import { items } from './data/items';
+import { formatTimeElapsed } from './utils/formatTimeElapsed';
 
 const App = () => {
-  const [playing, setplaying] = useState<boolean>(false);
+  const [playing, setPlaying] = useState<boolean>(false);
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
   const [moveCount, setMoveCount] = useState<number>(0);
-  const [showCount, setShowCount] = useState<number>(0);
+  const [shownCount, setShownCount] = useState<number>(0);
   const [gridItems, setGridItems] = useState<GridItemType[]>([]);
+  const [locked, setLocked] = useState<boolean>(false); // trava cliques enquanto verifica par
 
-  useEffect(() => resetAndCreateGrid(), []);
+  // Timer
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (playing) {
+        setTimeElapsed(prev => prev + 1);
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [playing]);
 
+  // Reset e criação do grid
   const resetAndCreateGrid = () => {
     setTimeElapsed(0);
     setMoveCount(0);
-    setShowCount(0);
+    setShownCount(0);
 
-    let newGrid: GridItemType[] = [];
-    for (let i = 0; i < (items.length * 2); i++) newGrid.push({
-      item: i, shown: false, permanentShown: false
-    });
-
-    for (let i = newGrid.length - 1; i > 0; i--) {
-      let j = Math.floor(Math.random() * (i + 1));
-      [newGrid[i], newGrid[j]] = [newGrid[j], newGrid[i]];
+    let tmpGrid: GridItemType[] = [];
+    for (let i = 0; i < (items.length * 2); i++) {
+      tmpGrid.push({
+        item: null,
+        shown: false,
+        permanentShown: false
+      });
     }
 
-    setGridItems(newGrid);
-    setplaying(true);
-  }
+    for (let w = 0; w < 2; w++) {
+      for (let i = 0; i < items.length; i++) {
+        let pos = -1;
+        while (pos < 0 || tmpGrid[pos].item !== null) {
+          pos = Math.floor(Math.random() * (items.length * 2));
+        }
+        tmpGrid[pos].item = i;
+      }
+    }
 
+    setGridItems(tmpGrid);
+    setPlaying(true);
+  };
+
+  // Clique no item
   const handleItemClick = (index: number) => {
+    if (!playing || locked || shownCount >= 2 || gridItems[index].shown || gridItems[index].permanentShown) {
+      return;
+    }
 
-  }
+    let tmpGrid = [...gridItems];
+    tmpGrid[index].shown = true;
+    setGridItems(tmpGrid);
+    setShownCount(prev => prev + 1);
+  };
+
+  // Verifica par quando duas cartas viradas
+  useEffect(() => {
+    if (shownCount === 2) {
+      setLocked(true);
+
+      const shownItems = gridItems.filter(item => item.shown && !item.permanentShown);
+      if (shownItems.length === 2) {
+        const [first, second] = shownItems;
+
+        if (first.item === second.item) {
+          // Par correto
+          let tmpGrid = [...gridItems];
+          tmpGrid = tmpGrid.map(item =>
+            item.shown && !item.permanentShown
+              ? { ...item, permanentShown: true, shown: false }
+              : item
+          );
+          setGridItems(tmpGrid);
+          setShownCount(0);
+        } else {
+          // Par incorreto
+          setTimeout(() => {
+            let tmpGrid = [...gridItems];
+            tmpGrid = tmpGrid.map(item =>
+              item.shown && !item.permanentShown
+                ? { ...item, shown: false }
+                : item
+            );
+            setGridItems(tmpGrid);
+            setShownCount(0);
+          }, 1000);
+        }
+
+        setMoveCount(prev => prev + 1);
+      }
+
+      setTimeout(() => setLocked(false), 1100); // liberação de clique com margem de delay
+    }
+  }, [shownCount, gridItems]);
 
   return (
     <C.Container>
       <C.Info>
         <C.LogoLink>
-          <img src={logoImage} width="200" alt="" />
+          <img src={logoImage} width="200" alt="Logo DevMemory" />
         </C.LogoLink>
 
         <C.InfoArea>
-          <InfoItem label="Tempo" value="00:00" />
-          <InfoItem label="Movimentos" value="0" />
+          <InfoItem label="Tempo" value={formatTimeElapsed(timeElapsed)} />
+          <InfoItem label="Movimentos" value={moveCount.toString()} />
         </C.InfoArea>
 
-        <Button label='Reiniciar' icon={RestartIcon} onClick={resetAndCreateGrid} />
+        <Button label="Reiniciar" icon={RestartIcon} onClick={resetAndCreateGrid} />
       </C.Info>
+
       <C.GridArea>
         <C.Grid>
           {gridItems.map((item, index) => (
@@ -68,9 +137,8 @@ const App = () => {
           ))}
         </C.Grid>
       </C.GridArea>
-
     </C.Container>
   );
-}
+};
 
 export default App;
