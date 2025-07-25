@@ -6,6 +6,7 @@ type ContainerProps = {
 
 export const Container = styled.div<ContainerProps>`
 	background-color: ${props => props.showBackground ? '#f5f1f1ff' : '#E2E3E3'};
+	width: 100px;
 	height: 100px;
 	border-radius: 20px;
 	display: flex;
@@ -19,7 +20,8 @@ type IconProps = {
 }
 
 export const Icon = styled.img<IconProps>`
-	width: 40px;
-	height: 40px;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
 	opacity: ${props => props.opacity ?? 1};
 `;
