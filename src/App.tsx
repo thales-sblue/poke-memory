@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import * as C from './App.styles';
 
-import logoImage from './assets/devmemory_logo.png';
+import logoImage from './assets/poke-memory.png';
 import RestartIcon from './svgs/restart.svg';
 
 import { Button } from './components/Button';

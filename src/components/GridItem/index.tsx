@@ -1,6 +1,6 @@
 import { GridItemType } from '../../types/GridItemType';
 import * as C from './styles';
-import b7Svg from '../../svgs/b7.svg';
+import b7Svg from '../../svgs/pokeball.svg';
 import { items } from '../../data/items';
 
 type Props = {

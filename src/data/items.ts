@@ -1,15 +1,15 @@
-import android from '../svgs/android.svg';
-import caminhao from '../svgs/caminhao.svg';
-import disney from '../svgs/disney.svg';
-import estrela from '../svgs/estrela.svg';
-import gasolina from '../svgs/gasolina.svg';
-import moto from '../svgs/moto.svg';
+import blastoise from '../svgs/blastoise.svg';
+import charizard from '../svgs/charizard.svg';
+import scyther from '../svgs/scyther.svg';
+import venusaur from '../svgs/venusaur.svg';
+import snorlax from '../svgs/snorlax.svg';
+import pikachu from '../svgs/pikachu.svg';
 
 export const items = [
-    { name: 'android', icon: android },
-    { name: 'caminhao', icon: caminhao },
-    { name: 'disney', icon: disney },
-    { name: 'estrela', icon: estrela },
-    { name: 'gasolina', icon: gasolina },
-    { name: 'moto', icon: moto },
+    { name: 'blastoise', icon: blastoise },
+    { name: 'charizard', icon: charizard },
+    { name: 'scyther', icon: scyther },
+    { name: 'venusaur', icon: venusaur },
+    { name: 'snorlax', icon: snorlax },
+    { name: 'pikachu', icon: pikachu },
 ];
