@@ -116,7 +116,7 @@ const App = () => {
     <C.Container>
       <C.Info>
         <C.LogoLink>
-          <img src={logoImage} width="200" alt="Logo DevMemory" />
+          <img src={logoImage} width="200" alt="Poke Memory" />
         </C.LogoLink>
 
         <C.InfoArea>
