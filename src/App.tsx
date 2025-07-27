@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import * as C from './App.styles';
+import { GlobalStyle } from './App.styles';
 
-import logoImage from './assets/poke-memory.png';
 import RestartIcon from './svgs/restart.svg';
 
 import { Button } from './components/Button';
@@ -19,6 +19,11 @@ const App = () => {
   const [shownCount, setShownCount] = useState<number>(0);
   const [gridItems, setGridItems] = useState<GridItemType[]>([]);
   const [locked, setLocked] = useState<boolean>(false);
+  const [firstTime, setFirstTime] = useState(true); // novo controle
+
+  useEffect(() => {
+    generateGrid();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -32,22 +37,15 @@ const App = () => {
   useEffect(() => {
     if (playing && gridItems.length > 0 && gridItems.every(item => item.permanentShown)) {
       setPlaying(false);
-      alert("🎉 Parabéns! Você completou o jogo!");
+      setTimeout(() => alert("🎉 Parabéns! Você completou o jogo!"), 500);
     }
   }, [gridItems, playing]);
 
-  const resetAndCreateGrid = () => {
-    setTimeElapsed(0);
-    setMoveCount(0);
-    setShownCount(0);
-
+  const generateGrid = () => {
     let tmpGrid: GridItemType[] = [];
-    for (let i = 0; i < (items.length * 2); i++) {
-      tmpGrid.push({
-        item: null,
-        shown: false,
-        permanentShown: false
-      });
+
+    for (let i = 0; i < items.length * 2; i++) {
+      tmpGrid.push({ item: null, shown: false, permanentShown: false });
     }
 
     for (let w = 0; w < 2; w++) {
@@ -61,13 +59,20 @@ const App = () => {
     }
 
     setGridItems(tmpGrid);
+  };
+
+  const resetAndStartGame = () => {
+    setTimeElapsed(0);
+    setMoveCount(0);
+    setShownCount(0);
+    setLocked(false);
+    generateGrid();
+    setFirstTime(false);
     setPlaying(true);
   };
 
   const handleItemClick = (index: number) => {
-    if (!playing || locked || shownCount >= 2 || gridItems[index].shown || gridItems[index].permanentShown) {
-      return;
-    }
+    if (!playing || locked || shownCount >= 2 || gridItems[index].shown || gridItems[index].permanentShown) return;
 
     let tmpGrid = [...gridItems];
     tmpGrid[index].shown = true;
@@ -113,32 +118,42 @@ const App = () => {
   }, [shownCount, gridItems]);
 
   return (
-    <C.Container>
-      <C.Info>
-        <C.LogoLink>
-          <img src={logoImage} width="200" alt="Poke Memory" />
-        </C.LogoLink>
+    <>
+      <GlobalStyle />
+      <C.Container>
+        <C.Info>
+          <C.LogoLink>
+            <C.Logo>
+              <span>Poke Memory</span>
+            </C.Logo>
+          </C.LogoLink>
 
-        <C.InfoArea>
-          <InfoItem label="Tempo" value={formatTimeElapsed(timeElapsed)} />
-          <InfoItem label="Movimentos" value={moveCount.toString()} />
-        </C.InfoArea>
 
-        <Button label="Reiniciar" icon={RestartIcon} onClick={resetAndCreateGrid} />
-      </C.Info>
+          <C.InfoArea>
+            <InfoItem label="Tempo" value={formatTimeElapsed(timeElapsed)} />
+            <InfoItem label="Movimentos" value={moveCount.toString()} />
+          </C.InfoArea>
 
-      <C.GridArea>
-        <C.Grid>
-          {gridItems.map((item, index) => (
-            <GridItem
-              key={index}
-              item={item}
-              onClick={() => handleItemClick(index)}
-            />
-          ))}
-        </C.Grid>
-      </C.GridArea>
-    </C.Container>
+          <Button
+            label={playing || !firstTime ? "Reiniciar" : "Começar"}
+            icon={RestartIcon}
+            onClick={resetAndStartGame}
+          />
+        </C.Info>
+
+        <C.GridArea>
+          <C.Grid>
+            {gridItems.map((item, index) => (
+              <GridItem
+                key={index}
+                item={item}
+                onClick={() => handleItemClick(index)}
+              />
+            ))}
+          </C.Grid>
+        </C.GridArea>
+      </C.Container>
+    </>
   );
 };
 
