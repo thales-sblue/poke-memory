@@ -2,7 +2,7 @@
 
 Um jogo da memória com temática Pokémon feito em **React**, onde você deve encontrar os pares de Pokémon escondidos nas cartas. Divertido, responsivo e com visual estilizado para lembrar os clássicos jogos retrô!
 
-![Poké Memory screenshot](./assets/playing.png)
+![Poké Memory screenshot](.github/assets/playing.png)
 
 ---
 
